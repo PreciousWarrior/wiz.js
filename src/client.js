@@ -58,7 +58,7 @@ class Client {
 
     async getNotificationCount() {
         let response = await this.api.request({}, "NotificationDtls.asmx/getUnreadNotificationCount");
-        return response.body;
+        return Number(response.body);
     }
 
     async getAttendenceSummary() {
