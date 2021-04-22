@@ -5,20 +5,21 @@ cookieRefreshHours = 1 //currently this is an extreme lower bound since no tests
 
 
 class Client {
+    #REFRESHHOURS = 1
+    REFRESHTIME = 1000 * 60 * 60 * this.#REFRESHHOURS
     constructor(email, password, schoolCode = "PSN") {
         this.api = new apiLib(email, password, schoolCode);
     }
 
     async start() {
+        await this.refresh()
+    }
+
+    async refresh() {
         await this.api.login();
         this.user = await this.getUser();
         this.user.name = `${this.user.userFirstName} ${this.user.userLastName}`;
         await this.verifyClasses();
-        this.timeout = setTimeout(function () { this.api.login() }, cookieRefreshHours * 60 * 60 * 1000);
-    }
-
-    async pause() {
-        clearTimeout(this.timeout);
     }
 
     async getUser() {
