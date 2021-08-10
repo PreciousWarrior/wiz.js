@@ -1,25 +1,29 @@
 import schools from "../data/schools.js";
 import axios from "axios";
-import auth from "../data/auth.js";
+import portals from "../data/portals.js";
+import * as Types from "../typedefs.js";
 
 export default class Client {
+  openedPortals = new Set();
+
   /**
-   * @param {Object} auth - Authentication object for the user.
-   * @param {string} auth.email - Email ID of the user
-   * @param {string} auth.password - Password of the user
-   * @param {number} auth.school - School ID (0-2) of the user
+   * A class representing a Base Client.
+   * @param {Types.auth} auth - Authentication object for the user.
    *
-   * @param {Object} options - Options for the client.
+   * @param {string} userType - The expected user type of the user (error will be thrown if a different user type is found)
    */
-  constructor(auth, options) {
+  constructor(auth, userType) {
     const schoolObject = schools[auth.school];
     if (!schoolObject) {
       throw new Error("An invalid school ID was provided to the BaseClient.");
     }
     this.auth = auth;
     this.school = schoolObject;
+    this.userType = userType.toLowerCase();
   }
-
+  /**
+   * Authenticates to the wizemen API using the provided credentials.
+   */
   async authenticate() {
     const response = await this.customCookieRequest(
       "homecontrollers/login/validateUser",
@@ -51,6 +55,23 @@ export default class Client {
   }
 
   /**
+   * Opens a portal which tells wizemen to allow the cookie to access certain API endpoints. This is *required* before accessing the API endpoint.
+   * @param {Number} portalId - The ID of the portal to open (+ve integer)
+   */
+
+  async openPortal(portalId) {
+    if (this.openedPortals.has(portalId)) {
+      return;
+    }
+    const sessionVals = await this.post(
+      "homecontrollers/launchpad/openPortal",
+      { portalCode: `WIZPOR${portalId}` }
+    );
+    await this.get(sessionVals);
+    this.openedPortals.add(portalId);
+  }
+
+  /**
    * Requests without the saved authentication, instead with a custom cookie.
    * @param {string} path - Relative path from root, ignoring the slash, for example "homecontrollers/login/validateUser".
    * @param {string} method - An HTTP method for the request (GET, POST, etc.)
@@ -58,6 +79,9 @@ export default class Client {
    * @param {string} cookie - Cookie to send in the request headers.
    */
   async customCookieRequest(path, method, data, cookie) {
+    if (path[0] === "/") {
+      path.replace("/", "");
+    }
     let headers = {
       Accept: "*/*",
       "Accept-Encoding": "gzip, deflate, br",
@@ -89,12 +113,33 @@ export default class Client {
    * @param {string} path - Relative path from root, ignoring the slash, for example "homecontrollers/login/validateUser".
    * @param {string} method - An HTTP method for the request (GET, POST, etc.)
    * @param {Object} data - A JS object to be passed as request data.
+   * @param {Boolean} expectSingleObject - The response's body from the API endpoint will *always* be an array with a single object. The function returns the object in the array (wizemen likes to do this a lot).
+   * @param {Number} portalId - The ID of a portal to open before sending the request
    * @param {Boolean} returnBody - A boolean, that indicates whether the whole response object should be returned or just the parsed body.
    */
 
-  async request(path, method = "GET", data = {}, returnBody = true) {
+  async request(
+    path,
+    method = "GET",
+    data = {},
+    expectSingleObject = false,
+    portalId,
+    returnBody = true
+  ) {
     if (!this.cookie) {
       await this.authenticate();
+      this.user = await this.getUserInfo();
+      if (this.userType && this.user.type.toLowerCase() !== this.userType) {
+        throw new Error(
+          `User type was ${this.user.type.toLowerCase()} whereas expected type was ${
+            this.userType
+          }`
+        );
+      }
+    }
+
+    if (portalId) {
+      await this.openPortal(portalId);
     }
 
     const response = await this.customCookieRequest(
@@ -108,7 +153,18 @@ export default class Client {
 
     if (returnBody) {
       if (response.data["d"]) {
-        return response.data["d"];
+        if (!expectSingleObject) {
+          return response.data["d"];
+        }
+        if (response.data["d"].length > 1) {
+          throw new Error(
+            "Response array has more than one object when expectSingleObject was specified."
+          );
+        }
+        if (response.data["d"].length === 1) {
+          return response.data["d"][0];
+        }
+        return null;
       }
       return response.data;
     }
@@ -120,36 +176,55 @@ export default class Client {
    * Sends a POST request for the authenticated user, abstracting away the "d" response argument.
    * @param {string} path - Relative path from root, ignoring the slash, for example "homecontrollers/login/validateUser".
    * @param {Object} data - A JS object to be passed as request data.
+   * @param {Boolean} expectSingleObject - The response's body from the API endpoint will *always* be an array with a single object. The function returns the object in the array (wizemen likes to do this a lot).
+   * @param {Number} portalId - The ID of a portal to open before sending the request
    * @param {Boolean} returnBody - A boolean, that indicates whether the whole response object should be returned or just the parsed body.
    */
-  async post(path, data, returnBody) {
-    return await this.request(path, "POST", data, returnBody);
+  async post(path, data, expectSingleObject, portalId, returnBody) {
+    return await this.request(
+      path,
+      "POST",
+      data,
+      expectSingleObject,
+      portalId,
+      returnBody
+    );
   }
 
   /**
    * Sends a GET request for the authenticated user, abstracting away the "d" response argument.
    * @param {string} path - Relative path from root, ignoring the slash, for example "homecontrollers/login/validateUser".
    * @param {Object} data - A JS object to be passed as request data.
+   * @param {Boolean} expectSingleObject - The response's body from the API endpoint will *always* be an array with a single object. The function returns the object in the array (wizemen likes to do this a lot).
+   * @param {Number} portalId - The ID of a portal to open before sending the request
    * @param {Boolean} returnBody - A boolean, that indicates whether the whole response object should be returned or just the parsed body.
    */
-  async get(path, data, returnBody) {
-    return await this.request(path, "GET", data, returnBody);
+  async get(path, data, expectSingleObject, portalId, returnBody) {
+    return await this.request(
+      path,
+      "GET",
+      data,
+      expectSingleObject,
+      portalId,
+      returnBody
+    );
   }
 
   /**
    * Gets information about the user.
+   * @returns {Types.User} - returns a User object.
    */
   async getUserInfo() {
-    //TODO fix this ;(
-    await this.post("homecontrollers/launchpad/openPortal", {
-      portalCode: "WIZPOR10",
-    });
-    return await this.post(
-      "helpdesk/helpdesk_management.aspx/getUserLoginData"
+    const shitDataStructure = await this.post(
+      "helpdesk/helpdesk_management.aspx/getUserLoginData",
+      undefined,
+      true,
+      portals.HELPDESK
     );
+    const betterDataStructure = {};
+    for (const [key, value] of Object.entries(shitDataStructure)) {
+      betterDataStructure[key.replace("user_", "")] = value;
+    }
+    return betterDataStructure;
   }
 }
-
-const client = new Client(auth);
-
-client.getUserInfo().then((i) => console.log(i));
