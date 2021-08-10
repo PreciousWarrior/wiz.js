@@ -1,6 +1,6 @@
 {
   "name": "@preciouswarrior/wiz.js",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "A library to interact with the wizemen API",
   "main": "./src/index.js",
   "scripts": {
@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/PreciousWarrior/wiz.js/issues"
   },
-  "homepage": "https://github.com/PreciousWarrior/wiz.js#readme"
+  "homepage": "https://github.com/PreciousWarrior/wiz.js#readme",
+  "type": "module",
+  "dependencies": {
+    "axios": "^0.21.1"
+  }
 }
