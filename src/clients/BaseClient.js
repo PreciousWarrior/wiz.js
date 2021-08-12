@@ -23,6 +23,7 @@ export default class Client {
   }
   /**
    * Authenticates to the wizemen API using the provided credentials.
+   * @private
    */
   async authenticate() {
     const response = await this.customCookieRequest(
