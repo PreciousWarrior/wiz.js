@@ -69,6 +69,7 @@ export default class Client {
     );
     await this.get(sessionVals);
     this.openedPortals.add(portalId);
+    return sessionVals;
   }
 
   /**
@@ -226,5 +227,30 @@ export default class Client {
       betterDataStructure[key.replace("user_", "")] = value;
     }
     return betterDataStructure;
+  }
+
+  /**
+   *
+   * @param {string} startDate
+   * @param {string} startTime
+   * @returns {Number} The time of the event, represented by the number of milliseconds that have elapsed since 1970-01-01 00:00:00 UTC
+   */
+  static convertWizemenTimeToDateObject(startDate, startTime) {
+    const [date, monthName, year] = startDate.split("-");
+    const [time, AMPM] = startTime.split(" ");
+    let [hours, minutes] = time.split(":");
+    if (AMPM === "PM") {
+      if (hours != 12) {
+        hours = 12 + +hours;
+      }
+    }
+    const month = "JanFebMarAprMayJunJulAugSepOctNovDec".indexOf(monthName) / 3;
+
+    // subtract 05:30 because wizemen provides times in IST
+    const dateObject = new Date(
+      Date.UTC(year, month, date, -5 + +hours, -30 + +minutes)
+    );
+
+    return dateObject.getTime();
   }
 }
