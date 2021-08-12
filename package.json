@@ -19,5 +19,8 @@
   "type": "module",
   "dependencies": {
     "axios": "^0.21.1"
+  },
+  "devDependencies": {
+    "jsdoc": "^3.6.7"
   }
 }
