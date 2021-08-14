@@ -4,6 +4,7 @@ import portals from "../data/portals.js";
 import * as Types from "../typedefs.js";
 
 export default class Client {
+  //TODO change portal auth system by reverse engineering customvals and how they work
   openedPortals = new Set();
 
   /**
@@ -244,14 +245,10 @@ export default class Client {
           hours = 12 + +hours;
         }
       }
-      return new Date(
-        Date.UTC(1970, 0, 1, -5 + +hours, -30 + +minutes)
-      ).getTime();
+      return new Date(Date.UTC(1970, 0, 1, hours, minutes)).getTime();
     }
     const [hours, minutes] = time.split(":");
-    return new Date(
-      Date.UTC(1970, 0, 1, -5 + +hours, -30 + +minutes)
-    ).getTime();
+    return new Date(Date.UTC(1970, 0, 1, hours, minutes)).getTime();
   }
 
   /**
@@ -263,7 +260,7 @@ export default class Client {
   static convertWordyDateToUnixTimestamp(wordyDate, dateSeperator = "-") {
     const [date, monthName, year] = wordyDate.split(dateSeperator);
     const month = "JanFebMarAprMayJunJulAugSepOctNovDec".indexOf(monthName) / 3;
-    return new Date(Date.UTC(year, month, date, -5, -30)).getTime();
+    return new Date(Date.UTC(year, month, date)).getTime();
   }
 
   /**
@@ -274,6 +271,14 @@ export default class Client {
    */
   static convertNumberDateToUnixTimestamp(dateString, dateSeperator = "-") {
     const [date, month, year] = dateString.split(dateSeperator);
-    return new Date(Date.UTC(year, month, date, -5, -30)).getTime();
+    return new Date(Date.UTC(year, month - 1, date)).getTime();
+  }
+
+  /**
+   * @param {Number} time - Time to subtract the offset from, represented by the number of milliseconds that have elapsed since 1970-01-01 +00:05:30 UTC
+   * @returns {Number} The number of milliseconds that have elapsed since 1970-01-01 00:00:00 UTC
+   */
+  static subtractTimezoneOffset(time) {
+    return new Date(time - (5 * 60 * 60 * 1000 + 30 * 60 * 1000)).getTime();
   }
 }
