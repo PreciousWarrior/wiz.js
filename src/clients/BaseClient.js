@@ -3,12 +3,13 @@ import axios from "axios";
 import portals from "../data/portals.js";
 import * as Types from "../typedefs.js";
 
-export default class Client {
+/**A class representing a Base Client. */
+class Client {
   //TODO change portal auth system by reverse engineering customvals and how they work
   openedPortals = new Set();
 
   /**
-   * A class representing a Base Client.
+   * Create a Client
    * @param {Types.auth} auth - Authentication object for the user.
    *
    * @param {string} userType - The expected user type of the user (error will be thrown if a different user type is found)
@@ -282,3 +283,5 @@ export default class Client {
     return new Date(time - (5 * 60 * 60 * 1000 + 30 * 60 * 1000)).getTime();
   }
 }
+
+export default Client;
