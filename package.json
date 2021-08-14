@@ -3,9 +3,6 @@
   "version": "2.0.0",
   "description": "A library to interact with the wizemen API",
   "main": "./src/index.js",
-  "scripts": {
-    "test": "node ./src/test.js"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/PreciousWarrior/wiz.js.git"
