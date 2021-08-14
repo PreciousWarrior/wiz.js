@@ -214,7 +214,7 @@ export default class Client {
 
   /**
    * Gets information about the user.
-   * @returns {Types.User} - returns a User object.
+   * @returns {Promise<Types.User>} - returns a User object.
    */
   async getUserInfo() {
     const shitDataStructure = await this.post(
@@ -231,27 +231,49 @@ export default class Client {
   }
 
   /**
-   *
-   * @param {string} startDate
-   * @param {string} startTime
+   * @param {string} time
+   * @param {Boolean} is12Hour
    * @returns {Number} The time of the event, represented by the number of milliseconds that have elapsed since 1970-01-01 00:00:00 UTC
    */
-  static convertWizemenTimeToDateObject(startDate, startTime) {
-    const [date, monthName, year] = startDate.split("-");
-    const [time, AMPM] = startTime.split(" ");
-    let [hours, minutes] = time.split(":");
-    if (AMPM === "PM") {
-      if (hours != 12) {
-        hours = 12 + +hours;
+  static convertTimeToUnixTimestamp(time, is12Hour = true) {
+    if (is12Hour) {
+      const [parsedTime, AMPM] = time.split(" ");
+      let [hours, minutes] = parsedTime.split(":");
+      if (AMPM === "PM") {
+        if (hours != 12) {
+          hours = 12 + +hours;
+        }
       }
+      return new Date(
+        Date.UTC(1970, 0, 1, -5 + +hours, -30 + +minutes)
+      ).getTime();
     }
+    const [hours, minutes] = time.split(":");
+    return new Date(
+      Date.UTC(1970, 0, 1, -5 + +hours, -30 + +minutes)
+    ).getTime();
+  }
+
+  /**
+   *
+   * @param {string} wordyDate -  A date in the following format - 9-Aug-2021
+   * @param {string} dateSeperator - The seperator between the dates, defaults to "-"
+   * @returns {Number} The time of the event, represented by the number of milliseconds that have elapsed since 1970-01-01 00:00:00 UTC
+   */
+  static convertWordyDateToUnixTimestamp(wordyDate, dateSeperator = "-") {
+    const [date, monthName, year] = wordyDate.split(dateSeperator);
     const month = "JanFebMarAprMayJunJulAugSepOctNovDec".indexOf(monthName) / 3;
+    return new Date(Date.UTC(year, month, date, -5, -30)).getTime();
+  }
 
-    // subtract 05:30 because wizemen provides times in IST
-    const dateObject = new Date(
-      Date.UTC(year, month, date, -5 + +hours, -30 + +minutes)
-    );
-
-    return dateObject.getTime();
+  /**
+   *
+   * @param {string} dateString -  A date in the following format - 09-08-2021
+   * @param {string} dateSeperator - The seperator between the dates, defaults to "-"
+   * @returns {Number} The time of the event, represented by the number of milliseconds that have elapsed since 1970-01-01 00:00:00 UTC
+   */
+  static convertNumberDateToUnixTimestamp(dateString, dateSeperator = "-") {
+    const [date, month, year] = dateString.split(dateSeperator);
+    return new Date(Date.UTC(year, month, date, -5, -30)).getTime();
   }
 }

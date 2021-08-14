@@ -40,7 +40,7 @@ class Student extends Client {
 
   /**
    *
-   * @returns {Types.Meeting[]} Returns all the Zoom meetings of the user
+   * @returns {Promise<Types.Meeting[]>} Returns all the Zoom meetings of the user
    */
   async getMeetings() {
     const [zoomMeetings, teamsMeetings] = await Promise.all([
@@ -48,14 +48,14 @@ class Student extends Client {
       this.getTeamsMeetings(),
     ]);
     return zoomMeetings.map((meeting) => {
+      const timestamp =
+        Client.convertWordyDateToUnixTimestamp(meeting.start_date) +
+        Client.convertTimeToUnixTimestamp(meeting.start_time);
       return {
         type: "zoom",
         id: meeting.meeting_id,
         className: meeting.topic,
-        startTime: Client.convertWizemenTimeToDateObject(
-          meeting.start_date,
-          meeting.start_time
-        ),
+        startTime: timestamp,
         duration: meeting.duration,
         url: meeting.join_url,
         password: meeting.meeting_password,
@@ -67,16 +67,14 @@ class Student extends Client {
     //TODO add Teams meeting object here (need a team meeting object sample in order to add)
   }
 
-  /*
   async getClasses() {
-    return await this.post(
+    const classes = await this.post(
       "classes/student/allclasses.aspx/getClassList",
       undefined,
       false,
       portals.CLASSES
     );
   }
-  */
 }
 
 export default Student;
