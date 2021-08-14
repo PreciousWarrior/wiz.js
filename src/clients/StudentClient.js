@@ -43,20 +43,19 @@ class Student extends Client {
    * @returns {Promise<Types.Meeting[]>} Returns all the Zoom meetings of the user
    */
   async getMeetings() {
-    const [zoomMeetings, teamsMeetings] = await Promise.all([
-      this.getZoomMeetings(),
-      this.getTeamsMeetings(),
-    ]);
+    const zoomMeetings = await this.getZoomMeetings();
     return zoomMeetings.map((meeting) => {
-      const timestamp =
+      const timestamp = Client.subtractTimezoneOffset(
         Client.convertWordyDateToUnixTimestamp(meeting.start_date) +
-        Client.convertTimeToUnixTimestamp(meeting.start_time);
+          Client.convertTimeToUnixTimestamp(meeting.start_time)
+      );
+
       return {
         type: "zoom",
         id: meeting.meeting_id,
         className: meeting.topic,
         startTime: timestamp,
-        duration: meeting.duration,
+        duration: +meeting.duration,
         url: meeting.join_url,
         password: meeting.meeting_password,
         host: meeting.host,
@@ -67,6 +66,10 @@ class Student extends Client {
     //TODO add Teams meeting object here (need a team meeting object sample in order to add)
   }
 
+  /**
+   * Gets the user's classes
+   * @returns {Promise<Types.ClassFromList[]>}
+   */
   async getClasses() {
     const classes = await this.post(
       "classes/student/allclasses.aspx/getClassList",
@@ -74,10 +77,92 @@ class Student extends Client {
       false,
       portals.CLASSES
     );
+    return classes.map((c) => {
+      return {
+        program: c.program,
+        grade: +c.grade.split(" ")[1],
+        name: c.course,
+        shortName: c.subject,
+        id: +c.class_id,
+        code: c.class_code,
+        teacherId: +c.teacher_id,
+      };
+    });
+  }
+
+  /**
+   * @param {Number} weekId - The ID of the week to get, where 0 is the current week. Must be an integer.
+   * @returns {Promise<Types.Schedule[][]>} - Returns the class schedule of the user in a jagged array, having an array of days in a week, and then an array of classes in a day.
+   */
+  async getClassSchedule(weekId = 0) {
+    const rawSchedule = await this.post(
+      "classes/generaldata.asmx/LoadClassScheduleNew",
+      { Counter: weekId, week: "ca" },
+      false,
+      portals.CLASSES
+    );
+    const parsedSchedule = [[], [], [], [], [], [], []];
+    const weekDays = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+    rawSchedule.forEach((scheduleObj) => {
+      parsedSchedule[weekDays.indexOf(scheduleObj.key_id)].push({
+        id: parseInt(scheduleObj.class_id),
+        weekday: scheduleObj.key_id,
+        startTime: Client.subtractTimezoneOffset(
+          Client.convertNumberDateToUnixTimestamp(
+            scheduleObj.start_date_display,
+            "/"
+          ) + Client.convertTimeToUnixTimestamp(scheduleObj.start_time, false)
+        ),
+
+        endTime: Client.subtractTimezoneOffset(
+          Client.convertNumberDateToUnixTimestamp(
+            scheduleObj.start_date_display,
+            "/"
+          ) + Client.convertTimeToUnixTimestamp(scheduleObj.end_time, false)
+        ),
+        teacherName: scheduleObj.teacher_full_name,
+        subject: scheduleObj.subject,
+        code: scheduleObj.class_code,
+      });
+    });
+    return parsedSchedule;
+  }
+
+  /**
+   * Gets class information from the ID.
+   * @param {Number} id - The ID of the class
+   * @returns {Promise<Types.Class>} - The class object for the ID.
+   */
+  async getClass(id) {
+    const payload = {
+      class_id: id.toString(),
+      classname: "",
+    };
+    await this.post(
+      "classes/student/studenthomeold.aspx/setclasssession",
+      payload,
+      false,
+      portals.CLASSES
+    );
+    const classInfo = await this.post(
+      "classes/student/studenthomeold.aspx/getclasscode"
+    );
+    return {
+      id: +classInfo.class_id,
+      name: classInfo.class_name,
+      code: classInfo.classcode,
+      isAcademic: classInfo.course_type === "Academic",
+      grade: +classInfo.grade.split(" ")[1],
+    };
   }
 }
 
 export default Student;
-
-const student = new Student(auth);
-student.getMeetings().then((a) => console.log(a));
