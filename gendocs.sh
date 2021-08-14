@@ -1,6 +1,9 @@
 # /bin/bash
 paths="typedefs.js clients/BaseClient.js clients/StudentClient.js"
 
+rm -r build
+rm -r docs
+
 mkdir build
 cp -r src build
 for path in $paths
@@ -14,5 +17,4 @@ cd build/src
 jsdoc -d '../docs' $paths
 cd ..
 cd ..
-ls
-cp -r build/docs docs
+mv build/docs .
