@@ -1,4 +1,4 @@
-export default [
+module.exports = [
   {
     name: "Pathways School Noida",
     id: "PSN",
