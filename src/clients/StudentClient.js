@@ -1,7 +1,6 @@
-import Client from "./BaseClient.js";
-import auth from "../data/auth.js";
-import portals from "../data/portals.js";
-import * as Types from "../typedefs.js";
+const Client = require("./BaseClient");
+const portals = require("../data/portals");
+const Types = require("../typedefs");
 
 /** Class representing a Student, sharing collections of functions that work for both MYP and DP students.*/
 class Student extends Client {
@@ -10,7 +9,8 @@ class Student extends Client {
    * @param {Types.auth} auth - Authentication object for the student.
    */
   constructor(auth) {
-    super(auth, "student");
+    auth.type = "student";
+    super(auth);
   }
 
   /**
@@ -43,8 +43,12 @@ class Student extends Client {
    * @returns {Promise<Types.Meeting[]>} Returns all the Zoom meetings of the user
    */
   async getMeetings() {
-    const zoomMeetings = await this.getZoomMeetings();
-    return zoomMeetings.map((meeting) => {
+    await this.request();
+    let [zoomMeetings, teamsMeetings] = await Promise.all([
+      this.getZoomMeetings(),
+      this.getTeamsMeetings(),
+    ]);
+    zoomMeetings = zoomMeetings.map((meeting) => {
       const timestamp = Client.subtractTimezoneOffset(
         Client.convertWordyDateToUnixTimestamp(meeting.start_date) +
           Client.convertTimeToUnixTimestamp(meeting.start_time)
@@ -62,8 +66,22 @@ class Student extends Client {
         agenda: meeting.agenda,
       };
     });
-
-    //TODO add Teams meeting object here (need a team meeting object sample in order to add)
+    teamsMeetings = teamsMeetings.map((meeting) => {
+      const timestamp = Client.subtractTimezoneOffset(
+        Client.convertWordyDateToUnixTimestamp(meeting.start_date) +
+          Client.convertTimeToUnixTimestamp(meeting.start_time)
+      );
+      return {
+        type: "teams",
+        className: meeting.topic,
+        startTime: timestamp,
+        duration: +meeting.duration,
+        url: meeting.join_url,
+        host: meeting.host,
+        agenda: meeting.agenda,
+      };
+    });
+    return zoomMeetings.concat(teamsMeetings);
   }
 
   /**
@@ -165,4 +183,4 @@ class Student extends Client {
   }
 }
 
-export default Student;
+module.exports = Student;
