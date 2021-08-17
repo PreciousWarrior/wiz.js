@@ -1,7 +1,7 @@
-import schools from "../data/schools.js";
-import axios from "axios";
-import portals from "../data/portals.js";
-import * as Types from "../typedefs.js";
+const schools = require("../data/schools");
+const axios = require("axios");
+const portals = require("../data/portals");
+const Types = require("../typedefs");
 
 /**A class representing a Base Client. */
 class Client {
@@ -12,22 +12,23 @@ class Client {
    * Create a Client
    * @param {Types.auth} auth - Authentication object for the user.
    *
-   * @param {string} userType - The expected user type of the user (error will be thrown if a different user type is found)
+   * @param {number} refreshCookieEvery - Refresh the cookie every x seconds
    */
-  constructor(auth, userType) {
-    const schoolObject = schools[auth.school];
-    if (!schoolObject) {
-      throw new Error("An invalid school ID was provided to the BaseClient.");
-    }
+  constructor(auth, refreshCookieEvery = 1000 * 60 * 60 * 1) {
     this.auth = auth;
-    this.school = schoolObject;
-    this.userType = userType.toLowerCase();
+    const schoolId = auth.school ?? "PSN";
+    this.school = schools.find((school) => school.id === schoolId);
+    this.userType = this.auth.type.toLowerCase() ?? "student";
+    this.cookieTimeout = refreshCookieEvery;
   }
   /**
    * Authenticates to the wizemen API using the provided credentials.
    * @private
    */
-  async authenticate() {
+  authenticate = async () => {
+    if (this.cookie) {
+      await this.logout();
+    }
     const response = await this.customCookieRequest(
       "homecontrollers/login/validateUser",
       "POST",
@@ -55,6 +56,15 @@ class Client {
       throw new Error("The server did not respond with the cookie header");
     }
     this.cookie = response.headers["set-cookie"][0].split(";")[0];
+    this.timeout = setTimeout(this.authenticate, this.cookieTimeout);
+  };
+  /**
+   * Deauths the current cookie (logs out with wizemen)
+   * @private
+   */
+  async logout() {
+    await this.get("signout");
+    this.cookie = null;
   }
 
   /**
@@ -84,7 +94,7 @@ class Client {
    */
   async customCookieRequest(path, method, data, cookie) {
     if (path[0] === "/") {
-      path.replace("/", "");
+      path = path.replace("/", "");
     }
     let headers = {
       Accept: "*/*",
@@ -142,6 +152,10 @@ class Client {
       }
     }
 
+    // for testing authentication, etc
+
+    if (!path) return;
+
     if (portalId) {
       await this.openPortal(portalId);
     }
@@ -152,8 +166,6 @@ class Client {
       data,
       this.cookie
     );
-
-    //TODO check for expired cookie, if expired, authenticate and recursively call self.
 
     if (returnBody) {
       if (response.data["d"]) {
@@ -225,10 +237,16 @@ class Client {
       true,
       portals.HELPDESK
     );
-    const betterDataStructure = {};
-    for (const [key, value] of Object.entries(shitDataStructure)) {
-      betterDataStructure[key.replace("user_", "")] = value;
-    }
+    const betterDataStructure = {
+      id: +shitDataStructure.user_id.substring(6),
+      email: shitDataStructure.user_email,
+      type: shitDataStructure.user_type,
+      name: `${shitDataStructure.user_first_name} ${shitDataStructure.user_last_name}`,
+      gender: shitDataStructure.user_gender,
+      imageId: +shitDataStructure.user_image
+        .substring(shitDataStructure.user_image.lastIndexOf("/") + 1)
+        .split(".")[0],
+    };
     return betterDataStructure;
   }
 
@@ -245,11 +263,16 @@ class Client {
         if (hours != 12) {
           hours = 12 + +hours;
         }
+      } else {
+        if (hours === "12" && minutes === "00") {
+          return Date.UTC(1970, 0, 1);
+        }
       }
-      return new Date(Date.UTC(1970, 0, 1, hours, minutes)).getTime();
+
+      return Date.UTC(1970, 0, 1, hours, minutes);
     }
     const [hours, minutes] = time.split(":");
-    return new Date(Date.UTC(1970, 0, 1, hours, minutes)).getTime();
+    return Date.UTC(1970, 0, 1, hours, minutes);
   }
 
   /**
@@ -261,7 +284,7 @@ class Client {
   static convertWordyDateToUnixTimestamp(wordyDate, dateSeperator = "-") {
     const [date, monthName, year] = wordyDate.split(dateSeperator);
     const month = "JanFebMarAprMayJunJulAugSepOctNovDec".indexOf(monthName) / 3;
-    return new Date(Date.UTC(year, month, date)).getTime();
+    return Date.UTC(year, month, date);
   }
 
   /**
@@ -272,7 +295,7 @@ class Client {
    */
   static convertNumberDateToUnixTimestamp(dateString, dateSeperator = "-") {
     const [date, month, year] = dateString.split(dateSeperator);
-    return new Date(Date.UTC(year, month - 1, date)).getTime();
+    return Date.UTC(year, month - 1, date);
   }
 
   /**
@@ -280,8 +303,8 @@ class Client {
    * @returns {Number} The number of milliseconds that have elapsed since 1970-01-01 00:00:00 UTC
    */
   static subtractTimezoneOffset(time) {
-    return new Date(time - (5 * 60 * 60 * 1000 + 30 * 60 * 1000)).getTime();
+    return time - (5 * 60 * 60 * 1000 + 30 * 60 * 1000);
   }
 }
 
-export default Client;
+module.exports = Client;
