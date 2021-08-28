@@ -5,7 +5,7 @@
  * @property {string} type - The user type (Student, Teacher, etc.)
  * @property {string} name: - The user's name (excluding the middle name if present)
  * @property {string} gender: - The user's gender
- * @property {number} imageId: - The ID of the user image
+ * @property {string} imageUrl: - The image (without protocol) of the user
  */
 /**
  *  @typedef {Object} auth
@@ -46,6 +46,8 @@
  * @property {string} code - The code of the class
  * @property {Boolean} isAcademic - Whether the class is academic or not
  * @property {number} grade - The grade of the class
+ * @property {Teacher} teacher - The teacher of the class
+ * @property {Array<User>} students - The students in the class
  */
 
 /**
@@ -58,6 +60,15 @@
  * @property {number} code - The code of the class
  * @property {number} teacherId - The ID of the class' teacher
  *
+ */
+
+/**
+ * @typedef {Object} Teacher
+ * @property {string} name - The name of the teacher
+ * @property {string} designation - The designation (such as 'Physics Teacher') of the teacher
+ * @property {string} email - The email address of the teacher
+ * @property {string} phoneNumber - The phone number of the teacher
+ * @property {string} imageUrl - The image URL of the teacher without the protocol
  */
 
 module.exports = {};

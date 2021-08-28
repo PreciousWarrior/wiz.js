@@ -170,15 +170,69 @@ class Student extends Client {
       false,
       portals.CLASSES
     );
-    const classInfo = await this.post(
+    const classPromise = this.post(
       "classes/student/studenthomeold.aspx/getclasscode"
     );
+    const studentsPromise = this.post(
+      "classes/faculty/facultyclassroster.aspx/showclasslist",
+      { menuid: "" }
+    );
+    const teacherPromise = this.post(
+      "classes/student/studentclassroster.aspx/getteacherdetail",
+      undefined,
+      true
+    );
+
+    const [classInfo, students, teacher] = await Promise.all([
+      classPromise,
+      studentsPromise,
+      teacherPromise,
+    ]);
+    const parsedTeacher = {
+      name: teacher.formtutor_name,
+      designation: teacher.formtutor_designation.trim(),
+      email: teacher.formtutor_mail,
+      phoneNumber: teacher.formtutor_phone,
+      imageUrl: `${this.school.lowerCaseID}.wizemen.net${teacher.formtutor_img}`,
+    };
+    const parsedStudents = students.map((student) => {
+      //console.log(student);
+      return {
+        id: +student.user_id.substring(6),
+        name: `${student.student_first_name} ${student.student_last_name}`,
+        birthday: Client.convertWordyDateToUnixTimestamp(
+          student.birthday.replace(",", ""),
+          " ",
+          true
+        ),
+        type: "Student",
+        email: student.student_email,
+        imageUrl: student.img_path,
+        parents: [
+          {
+            name: `${student.parent1_first_name} ${student.parent1_last_name}`,
+            email: student.parent1_email,
+            phoneNumber: student.parent1_mobile,
+          },
+          {
+            name: `${student.parent2_first_name} ${student.parent2_last_name}`,
+            email: student.parent2_email,
+            phoneNumber: student.parent2_mobile,
+          },
+        ],
+        //wizemen does not pass gender in the students array for the class
+        gender: null,
+        homeroomTeacherName: student.homeroom_teacher_name,
+      };
+    });
     return {
       id: +classInfo.class_id,
       name: classInfo.class_name,
       code: classInfo.classcode,
       isAcademic: classInfo.course_type === "Academic",
       grade: +classInfo.grade.split(" ")[1],
+      teacher: parsedTeacher,
+      students: parsedStudents,
     };
   }
 }
