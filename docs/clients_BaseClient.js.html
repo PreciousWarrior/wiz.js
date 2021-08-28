@@ -271,9 +271,7 @@ class Client {
       type: shitDataStructure.user_type,
       name: `${shitDataStructure.user_first_name} ${shitDataStructure.user_last_name}`,
       gender: shitDataStructure.user_gender,
-      imageId: +shitDataStructure.user_image
-        .substring(shitDataStructure.user_image.lastIndexOf("/") + 1)
-        .split(".")[0],
+      imageUrl: shitDataStructure.user_image.split("https://")[1],
     };
     return betterDataStructure;
   }
@@ -309,8 +307,16 @@ class Client {
    * @param {string} dateSeperator - The seperator between the dates, defaults to "-"
    * @returns {Number} The time of the event, represented by the number of milliseconds that have elapsed since 1970-01-01 00:00:00 UTC
    */
-  static convertWordyDateToUnixTimestamp(wordyDate, dateSeperator = "-") {
-    const [date, monthName, year] = wordyDate.split(dateSeperator);
+  static convertWordyDateToUnixTimestamp(
+    wordyDate,
+    dateSeperator = "-",
+    isMonthFirst = false
+  ) {
+    if (isMonthFirst) {
+      var [monthName, date, year] = wordyDate.split(dateSeperator);
+    } else {
+      var [date, monthName, year] = wordyDate.split(dateSeperator);
+    }
     const month = "JanFebMarAprMayJunJulAugSepOctNovDec".indexOf(monthName) / 3;
     return Date.UTC(year, month, date);
   }
