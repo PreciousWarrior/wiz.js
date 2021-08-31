@@ -5,12 +5,27 @@ const Types = require("../typedefs");
 /** Class representing a Student, sharing collections of functions that work for both MYP and DP students.*/
 class Student extends Client {
   /**
-   * Create a student
    * @param {Types.auth} auth - Authentication object for the student.
+   * @private
    */
   constructor(auth) {
     auth.type = "student";
     super(auth);
+  }
+
+  /**
+   * Builds a student and checks for any possible authentication errors.
+   * @param {Types.auth} auth
+   * @returns {Promise<Student>}
+   */
+  static async build(auth) {
+    const client = new Student(auth);
+    try {
+      await client.request();
+      return client;
+    } catch (e) {
+      throw e;
+    }
   }
 
   /**

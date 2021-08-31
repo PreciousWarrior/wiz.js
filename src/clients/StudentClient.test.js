@@ -1,7 +1,11 @@
 const auth = require("../data/auth");
 const Student = require("./StudentClient");
 
-const student = new Student(auth);
+let student;
+
+beforeAll(async () => {
+  student = await Student.build(auth);
+});
 
 test("Tests if meetings object is returned correctly", async () => {
   //TODO
