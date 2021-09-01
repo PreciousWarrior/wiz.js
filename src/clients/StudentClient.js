@@ -6,7 +6,6 @@ const Types = require("../typedefs");
 class Student extends Client {
   /**
    * @param {Types.auth} auth - Authentication object for the student.
-   * @private
    */
   constructor(auth) {
     auth.type = "student";
