@@ -26,6 +26,6 @@
   },
   "scripts": {
     "prepublishOnly": "./gendocs.sh",
-    "test": "jest --watchAll"
+    "test": "cd src; jest --watchAll"
   }
 }

@@ -102,7 +102,6 @@ class Client {
 	 * @private
 	 */
 	authenticate = async () => {
-		const currTime = Date.now()
 		if (this.cookie) {
 			await this.logout();
 		}
@@ -178,22 +177,18 @@ class Client {
 			Accept: "*/*",
 			"Accept-Encoding": "gzip, deflate, br",
 			"Content-Type": "application/json; charset=utf-8",
-			Host: `${this.school.lowerCaseID}.wizemen.net`,
-			Origin: `https://${this.school.lowerCaseID}.wizemen.net`,
-			Referer: "https://psn.wizemen.net/launchpadnew",
-			"User-Agent":
-				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36",
 		};
 		if (cookie) {
 			headers["Cookie"] = cookie;
 		}
-		return await axios.request({
+		const resp = await axios.request({
 			url: `https://${this.school.lowerCaseID}.wizemen.net/${path}`,
 			method,
 			data,
-			timeout: 10000,
 			headers,
 		});
+		
+		return resp;
 	}
 
 	/**
@@ -216,20 +211,7 @@ class Client {
 	) {
 
 		if (!this.cookie) {
-			const currTime = Date.now()
-			console.log("Started auth...")
 			await this.authenticate();
-			this.getUserInfo().then((user) => {
-				this.user = user;
-				if (this.userType && this.user.type.toLowerCase() !== this.userType) {
-					throw new Error(
-						`User type was ${this.user.type.toLowerCase()} whereas expected type was ${
-							this.userType
-						}`
-					);
-				}
-			});
-			console.log(`Auth completed in: ${Date.now() - currTime}ms`)
 		}
 
 		// for testing authentication, etc
