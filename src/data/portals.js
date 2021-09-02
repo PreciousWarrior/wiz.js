@@ -1,6 +1,6 @@
 const portals = {
-	CLASSES: 6,
-	HELPDESK: 10,
-};
+    CLASSES: 6,
+    HELPDESK: 10,
+}
 
-export default portals;
+export default portals
