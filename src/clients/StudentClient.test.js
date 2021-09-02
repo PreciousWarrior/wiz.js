@@ -6,9 +6,7 @@ let student
 jest.setTimeout(150000)
 beforeAll(async () => {
     const currTime = Date.now()
-    console.log('started building student')
     student = await Student.build(auth)
-    console.log(`Student build in: ${Date.now() - currTime}ms`)
 })
 
 test('Tests if meetings object is returned correctly', async () => {
