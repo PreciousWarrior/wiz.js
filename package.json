@@ -17,12 +17,14 @@
     "axios": "^0.21.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.15.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.15.0",
     "@types/jest": "^27.0.1",
+    "babel-jest": "^27.1.0",
     "jest": "^27.0.6",
     "jsdoc": "^3.6.7"
   },
   "scripts": {
-    "prepublishOnly": "./gendocs.sh",
-    "test": "jest --watchAll"
+    "test": "cd src; jest --watchAll"
   }
 }

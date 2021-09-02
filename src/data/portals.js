@@ -1,4 +1,6 @@
-module.exports = {
-  CLASSES: 6,
-  HELPDESK: 10,
-};
+const portals = {
+    CLASSES: 6,
+    HELPDESK: 10,
+}
+
+export default portals

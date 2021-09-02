@@ -1,6 +1,9 @@
+docs/
+gendocs.sh
+jsdoc.config.json
+
 # Docs build
 build/
-.idea/
 
 # Logs
 logs
@@ -106,3 +109,4 @@ dist
 
 # TernJS port file
 .tern-port
+

@@ -70,5 +70,3 @@
  * @property {string} phoneNumber - The phone number of the teacher
  * @property {string} imageUrl - The image URL of the teacher without the protocol
  */
-
-module.exports = {};
