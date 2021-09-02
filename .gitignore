@@ -1,6 +1,7 @@
 # Docs build
 build/
 .idea/
+dist
 
 # Logs
 logs

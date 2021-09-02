@@ -14,11 +14,15 @@
   },
   "homepage": "https://github.com/PreciousWarrior/wiz.js#readme",
   "dependencies": {
+    "@babel/runtime": "^7.15.3",
     "axios": "^0.21.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.14.8",
     "@babel/core": "^7.15.0",
     "@babel/plugin-transform-modules-commonjs": "^7.15.0",
+    "@babel/plugin-transform-runtime": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
     "@types/jest": "^27.0.1",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^27.1.0",
@@ -35,7 +39,8 @@
   "scripts": {
     "test": "jest",
     "lint": "cross-env NODE_ENV=development eslint . --cache --ext .js,.jsx,.ts,.tsx",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "build": "npx babel src --out-dir dist"
   },
   "prettier": {
     "overrides": [
