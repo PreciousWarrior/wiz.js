@@ -78,6 +78,7 @@ class Client {
         return Date.UTC(year, month, date)
     }
 
+<<<<<<< HEAD
     /**
      *
      * @param {string} dateString -  A date in the following format - 09-08-2021
@@ -96,6 +97,15 @@ class Client {
     static subtractTimezoneOffset(time) {
         return time - (5 * 60 * 60 * 1000 + 30 * 60 * 1000)
     }
+=======
+	/**
+	 * @param {Number} time - Time to subtract the offset from, represented by the number of milliseconds that have elapsed since 1970-01-01 +00:05:30 UTC
+	 * @returns {Number} The number of milliseconds that have elapsed since 1970-01-01 00:00:00 UTC
+	 */
+	static subtractTimezoneOffset(time) {
+		return time - (5 * 60 * 60 * 1000 + 30 * 60 * 1000);
+	}
+>>>>>>> 6b833529398a52e25b82cca33b6983296bab27cf
 
     /**
      * Authenticates to the wizemen API using the provided credentials.
