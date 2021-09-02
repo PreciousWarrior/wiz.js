@@ -1,6 +1,7 @@
 docs/
 gendocs.sh
 jsdoc.config.json
+src/
 
 # Docs build
 build/

@@ -21,7 +21,7 @@ class Student extends Client {
         await client.request()
         return client
     }
-  
+
 
     /**
      * @private
