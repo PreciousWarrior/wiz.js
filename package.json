@@ -1,8 +1,15 @@
 {
   "name": "@preciouswarrior/wiz.js",
   "version": "2.0.5",
-  "description": "A library to interact with the wizemen API",
-  "main": "./src/index.js",
+  "description": "A js library to interact with the wizemen API",
+  "scripts": {
+    "prebuild": "rimraf dist && yarn test",
+    "build": " rollup -c",
+    "test": "jest",
+    "lint": "cross-env NODE_ENV=development eslint . --cache --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "prettier-eslint \"src/**/*.js\" --write",
+    "prepare": "husky install"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/PreciousWarrior/wiz.js.git"
@@ -11,36 +18,6 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/PreciousWarrior/wiz.js/issues"
-  },
-  "homepage": "https://github.com/PreciousWarrior/wiz.js#readme",
-  "dependencies": {
-    "@babel/runtime": "^7.15.3",
-    "axios": "^0.21.1"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.14.8",
-    "@babel/core": "^7.15.0",
-    "@babel/plugin-transform-modules-commonjs": "^7.15.0",
-    "@babel/plugin-transform-runtime": "^7.15.0",
-    "@babel/preset-env": "^7.15.0",
-    "@types/jest": "^27.0.1",
-    "babel-eslint": "^10.1.0",
-    "babel-jest": "^27.1.0",
-    "cross-env": "^7.0.3",
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-jest": "^24.4.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "husky": "^7.0.0",
-    "jest": "^27.0.6",
-    "jsdoc": "^3.6.7",
-    "lint-staged": "^11.1.2"
-  },
-  "scripts": {
-    "test": "jest",
-    "lint": "cross-env NODE_ENV=development eslint . --cache --ext .js,.jsx,.ts,.tsx",
-    "prepare": "husky install",
-    "build": "npx babel src --out-dir dist"
   },
   "prettier": {
     "overrides": [
@@ -59,7 +36,8 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "cross-env NODE_ENV=development eslint --cache"
+      "cross-env NODE_ENV=development eslint --fix",
+      "git add"
     ],
     "*.json,.{babelrc,eslintrc,prettierrc}": [
       "prettier --ignore-path .eslintignore --parser json --write"
@@ -67,7 +45,32 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "yarn lint && lint-staged"
     }
+  },
+  "homepage": "https://github.com/PreciousWarrior/wiz.js#readme",
+  "devDependencies": {
+    "@babel/core": "^7.15.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
+    "babel-eslint": "^10.1.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jest": "^24.4.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.0",
+    "jest": "^27.1.0",
+    "lint-staged": "^11.1.2",
+    "prettier-eslint-cli": "^5.0.1",
+    "rollup": "^2.56.3",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^7.0.2"
+  },
+  "dependencies": {
+    "axios": "^0.21.1"
   }
 }
