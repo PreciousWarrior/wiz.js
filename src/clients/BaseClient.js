@@ -59,7 +59,7 @@ class Client {
 		dateSeperator = "-",
 		isMonthFirst = false
 	) {
-		
+
 		let date;
 		let monthName;
 		let year;
@@ -187,7 +187,7 @@ class Client {
 			data,
 			headers,
 		});
-		
+
 		return resp;
 	}
 
