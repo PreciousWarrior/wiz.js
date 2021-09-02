@@ -79,17 +79,6 @@ class Client {
 	}
 
 	/**
-	 *
-	 * @param {string} dateString -  A date in the following format - 09-08-2021
-	 * @param {string} dateSeperator - The seperator between the dates, defaults to "-"
-	 * @returns {Number} The time of the event, represented by the number of milliseconds that have elapsed since 1970-01-01 00:00:00 UTC
-	 */
-	static convertNumberDateToUnixTimestamp(dateString, dateSeperator = "-") {
-		const [date, month, year] = dateString.split(dateSeperator);
-		return Date.UTC(year, month - 1, date);
-	}
-
-	/**
 	 * @param {Number} time - Time to subtract the offset from, represented by the number of milliseconds that have elapsed since 1970-01-01 +00:05:30 UTC
 	 * @returns {Number} The number of milliseconds that have elapsed since 1970-01-01 00:00:00 UTC
 	 */
