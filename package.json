@@ -20,11 +20,49 @@
     "@babel/core": "^7.15.0",
     "@babel/plugin-transform-modules-commonjs": "^7.15.0",
     "@types/jest": "^27.0.1",
+    "babel-eslint": "^10.1.0",
     "babel-jest": "^27.1.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jest": "^24.4.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.0",
     "jest": "^27.0.6",
-    "jsdoc": "^3.6.7"
+    "jsdoc": "^3.6.7",
+    "lint-staged": "^11.1.2"
   },
   "scripts": {
-    "test": "cd src; jest --watchAll"
+    "test": "jest",
+    "lint": "cross-env NODE_ENV=development eslint . --cache --ext .js,.jsx,.ts,.tsx",
+    "prepare": "husky install"
+  },
+  "prettier": {
+    "overrides": [
+      {
+        "files": [
+          ".prettierrc",
+          ".babelrc",
+          ".eslintrc"
+        ],
+        "options": {
+          "parser": "json"
+        }
+      }
+    ],
+    "singleQuote": true
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "cross-env NODE_ENV=development eslint --cache"
+    ],
+    "*.json,.{babelrc,eslintrc,prettierrc}": [
+      "prettier --ignore-path .eslintignore --parser json --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }

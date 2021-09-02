@@ -5,7 +5,6 @@ import portals from '../data/portals'
 /**A class representing a Base Client. */
 class Client {
     //TODO change portal auth system by reverse engineering customvals and how they work
-    openedPortals = new Set()
 
     /**
      * Create a Client
@@ -14,6 +13,7 @@ class Client {
      * @param refreshCookieEvery - Refresh the cookie every x milliseconds
      */
     constructor(auth, refreshCookieEvery = 1000 * 60 * 60) {
+        this.openedPortals = new Set()
         this.auth = auth
         const schoolId = auth.school ?? 'PSN'
         this.school = schools.find((school) => school.id === schoolId)
@@ -88,14 +88,14 @@ class Client {
         const [date, month, year] = dateString.split(dateSeperator)
         return Date.UTC(year, month - 1, date)
     }
-    
-	/**
-	 * @param {Number} time - Time to subtract the offset from, represented by the number of milliseconds that have elapsed since 1970-01-01 +00:05:30 UTC
-	 * @returns {Number} The number of milliseconds that have elapsed since 1970-01-01 00:00:00 UTC
-	 */
-	static subtractTimezoneOffset(time) {
-		return time - (5 * 60 * 60 * 1000 + 30 * 60 * 1000);
-	}
+
+    /**
+     * @param {Number} time - Time to subtract the offset from, represented by the number of milliseconds that have elapsed since 1970-01-01 +00:05:30 UTC
+     * @returns {Number} The number of milliseconds that have elapsed since 1970-01-01 00:00:00 UTC
+     */
+    static subtractTimezoneOffset(time) {
+        return time - (5 * 60 * 60 * 1000 + 30 * 60 * 1000)
+    }
 
     /**
      * Authenticates to the wizemen API using the provided credentials.
@@ -181,14 +181,12 @@ class Client {
         if (cookie) {
             headers['Cookie'] = cookie
         }
-        const resp = await axios.request({
+        return await axios.request({
             url: `https://${this.school.lowerCaseID}.wizemen.net/${path}`,
             method,
             data,
             headers,
         })
-
-        return resp
     }
 
     /**
