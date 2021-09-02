@@ -32,16 +32,23 @@ The master branch contains code in development, and the version number is increm
 
 ```js
 const Wizemen = require("@preciouswarrior/wiz.js");
-const student = new Wizemen.Student({
+
+Wizemen.Student.build({
   email: "hello.world@pathways.in",
   password: "password123supersecure",
   school: "PSN",
-});
-student
-  .getMeetings()
-  .then((meetings) =>
-    console.log(meetings.map((meeting) => meeting.url).join("\n"))
-  );
+})
+  .then(student => {
+    student
+    .getMeetings()
+    .then((meetings) =>
+      console.log(meetings.map((meeting) => meeting.url).join("\n"))
+      );
+    })
+  .catch(error => {
+    console.log(error.message)
+  });
+
 ```
 
 This piece of code will show all your zoom and teams meetings in the console!
