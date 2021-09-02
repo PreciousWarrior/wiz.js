@@ -142,14 +142,16 @@ class Client {
   ) {
     if (!this.cookie) {
       await this.authenticate();
-      this.user = await this.getUserInfo();
-      if (this.userType && this.user.type.toLowerCase() !== this.userType) {
-        throw new Error(
-          `User type was ${this.user.type.toLowerCase()} whereas expected type was ${
-            this.userType
-          }`
-        );
-      }
+      this.getUserInfo().then((user) => {
+        this.user = user;
+        if (this.userType && this.user.type.toLowerCase() !== this.userType) {
+          throw new Error(
+            `User type was ${this.user.type.toLowerCase()} whereas expected type was ${
+              this.userType
+            }`
+          );
+        }
+      });
     }
 
     // for testing authentication, etc
