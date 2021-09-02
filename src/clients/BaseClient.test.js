@@ -1,7 +1,7 @@
 import auth from '../data/auth'
 import Client from './BaseClient'
 
-const delay = (ms) => new Promise((res) => setTimeout(res, ms))
+// const delay = (ms) => new Promise((res) => setTimeout(res, ms))
 jest.setTimeout(15000)
 
 test('Should convert time to Unix Timestamp', () => {

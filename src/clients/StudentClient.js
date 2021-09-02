@@ -18,12 +18,8 @@ class Student extends Client {
      */
     static async build(auth) {
         const client = new Student(auth)
-        try {
-            await client.request()
-            return client
-        } catch (e) {
-            throw e
-        }
+        await client.request()
+        return client
     }
 
     /**

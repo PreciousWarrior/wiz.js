@@ -14,20 +14,27 @@
   },
   "homepage": "https://github.com/PreciousWarrior/wiz.js#readme",
   "dependencies": {
-    "axios": "^0.21.1",
-    "husky": "^7.0.2",
-    "lint-staged": "^11.1.2"
+    "axios": "^0.21.1"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",
     "@babel/plugin-transform-modules-commonjs": "^7.15.0",
     "@types/jest": "^27.0.1",
+    "babel-eslint": "^10.1.0",
     "babel-jest": "^27.1.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jest": "^24.4.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.2",
     "jest": "^27.0.6",
-    "jsdoc": "^3.6.7"
+    "jsdoc": "^3.6.7",
+    "lint-staged": "^11.1.2"
   },
   "scripts": {
-    "test": "cd src; jest --watchAll"
+    "test": "cd src; jest --watchAll",
+    "lint": "cross-env NODE_ENV=development eslint . --cache --ext .js,.jsx,.ts,.tsx"
   },
   "prettier": {
     "overrides": [
