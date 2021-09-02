@@ -5,7 +5,7 @@
   "scripts": {
     "prebuild": "rimraf dist && yarn test",
     "build": " rollup -c",
-    "test": "jest --coverage",
+    "test": "jest",
     "lint": "cross-env NODE_ENV=development eslint . --cache --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "prettier-eslint \"src/**/*.js\" --write",
     "prepare": "husky install"
