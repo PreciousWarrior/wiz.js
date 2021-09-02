@@ -1,4 +1,4 @@
-module.exports = {
+const auth = {
   email: "joe.mama@pathways.in",
   password: "😏 😏 :)",
   school: "PWS",
@@ -6,3 +6,5 @@ module.exports = {
   gender: "Female",
   type: "Student",
 };
+
+export default auth;

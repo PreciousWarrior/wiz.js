@@ -1,4 +1,4 @@
-module.exports = [
+const schools = [
   {
     name: "Pathways School Noida",
     id: "PSN",
@@ -15,3 +15,5 @@ module.exports = [
     lowerCaseID: "pws",
   },
 ];
+
+export default schools;

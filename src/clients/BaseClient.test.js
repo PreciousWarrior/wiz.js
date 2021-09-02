@@ -1,5 +1,5 @@
-const auth = require("../data/auth");
-const Client = require("./BaseClient");
+import auth from"../data/auth";
+import Client from "./BaseClient";
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 

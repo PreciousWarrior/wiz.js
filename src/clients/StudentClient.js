@@ -1,11 +1,10 @@
-const Client = require("./BaseClient");
-const portals = require("../data/portals");
-const Types = require("../typedefs");
+import Client from "./BaseClient";
+import portals from "../data/portals";
 
 /** Class representing a Student, sharing collections of functions that work for both MYP and DP students.*/
 class Student extends Client {
   /**
-   * @param {Types.auth} auth - Authentication object for the student.
+   * @param auth - Authentication object for the student.
    */
   constructor(auth) {
     auth.type = "student";
@@ -14,7 +13,7 @@ class Student extends Client {
 
   /**
    * Builds a student and checks for any possible authentication errors.
-   * @param {Types.auth} auth
+   * @param auth
    * @returns {Promise<Student>}
    */
   static async build(auth) {
@@ -54,7 +53,7 @@ class Student extends Client {
 
   /**
    *
-   * @returns {Promise<Types.Meeting[]>} Returns all the Zoom meetings of the user
+   * @returns {Promise} Returns all the Zoom meetings of the user
    */
   async getMeetings() {
     await this.request();
@@ -100,7 +99,7 @@ class Student extends Client {
 
   /**
    * Gets the user's classes
-   * @returns {Promise<Types.ClassFromList[]>}
+   * @returns {Promise}
    */
   async getClasses() {
     const classes = await this.post(
@@ -124,7 +123,7 @@ class Student extends Client {
 
   /**
    * @param {Number} weekId - The ID of the week to get, where 0 is the current week. Must be an integer.
-   * @returns {Promise<Types.Schedule[][]>} - Returns the class schedule of the user in a jagged array, having an array of days in a week, and then an array of classes in a day.
+   * @returns {Promise} - Returns the class schedule of the user in a jagged array, having an array of days in a week, and then an array of classes in a day.
    */
   async getClassSchedule(weekId = 0) {
     const rawSchedule = await this.post(
@@ -251,4 +250,4 @@ class Student extends Client {
   }
 }
 
-module.exports = Student;
+export default Student;
