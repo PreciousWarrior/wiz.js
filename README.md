@@ -43,8 +43,8 @@ Wizemen.Student.build({
     .getMeetings()
     .then((meetings) =>
       console.log(meetings.map((meeting) => meeting.url).join("\n"))
-      );
-    })
+    );
+  })
   .catch(error => {
     console.log(error.message)
   });
