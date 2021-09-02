@@ -1,6 +1,6 @@
 import auth from '../data/auth'
 import Student from '../clients/StudentClient'
-jest.setTimeout(15000)
+jest.setTimeout(25000)
 
 let student
 beforeAll(async () => {
