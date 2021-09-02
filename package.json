@@ -3,9 +3,9 @@
   "version": "2.0.5",
   "description": "A js library to interact with the wizemen API",
   "scripts": {
-    "prebuild": "rimraf dist",
+    "prebuild": "rimraf dist && yarn test",
     "build": " rollup -c",
-    "test": "jest",
+    "test": "jest --coverage",
     "lint": "cross-env NODE_ENV=development eslint . --cache --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "prettier-eslint \"src/**/*.js\" --write",
     "prepare": "husky install"
@@ -45,7 +45,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "yarn lint && lint-staged"
     }
   },
   "homepage": "https://github.com/PreciousWarrior/wiz.js#readme",
@@ -53,6 +53,8 @@
     "@babel/core": "^7.15.0",
     "@babel/plugin-transform-modules-commonjs": "^7.15.0",
     "@babel/preset-env": "^7.15.0",
+    "babel-eslint": "^10.1.0",
+    "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-jest": "^24.4.0",
