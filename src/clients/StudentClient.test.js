@@ -1,9 +1,8 @@
 import auth from '../data/auth'
 import Student from '../clients/StudentClient'
+jest.setTimeout(15000)
 
 let student
-
-jest.setTimeout(150000)
 beforeAll(async () => {
     student = await Student.build(auth)
 })

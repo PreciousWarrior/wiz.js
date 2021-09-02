@@ -2,7 +2,7 @@ import auth from '../data/auth'
 import Client from './BaseClient'
 
 // const delay = (ms) => new Promise((res) => setTimeout(res, ms))
-jest.setTimeout(15000)
+jest.setTimeout(25000)
 
 test('Should convert time to Unix Timestamp', () => {
     expect(Client.convertTimeToUnixTimestamp('20:05', false)).toBe(72300000)

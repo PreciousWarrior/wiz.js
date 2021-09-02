@@ -27,14 +27,15 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-jest": "^24.4.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "husky": "^7.0.2",
+    "husky": "^7.0.0",
     "jest": "^27.0.6",
     "jsdoc": "^3.6.7",
     "lint-staged": "^11.1.2"
   },
   "scripts": {
-    "test": "cd src; jest --watchAll",
-    "lint": "cross-env NODE_ENV=development eslint . --cache --ext .js,.jsx,.ts,.tsx"
+    "test": "jest",
+    "lint": "cross-env NODE_ENV=development eslint . --cache --ext .js,.jsx,.ts,.tsx",
+    "prepare": "husky install"
   },
   "prettier": {
     "overrides": [
