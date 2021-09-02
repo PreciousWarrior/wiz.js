@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="36dab003-2196-4e98-b2c9-ba7561b542d4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package_old.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +39,7 @@
       <updated>1630582252034</updated>
       <workItem from="1630582255524" duration="2002000" />
       <workItem from="1630584625467" duration="1441000" />
-      <workItem from="1630586104112" duration="1914000" />
+      <workItem from="1630586104112" duration="2241000" />
     </task>
     <servers />
   </component>
