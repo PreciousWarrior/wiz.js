@@ -1,2 +1,2 @@
-export * from './clients/StudentClient'
-export * from './clients/BaseClient'
+export {default as StudentClient} from './clients/StudentClient'
+export {default as BaseClient} from './clients/BaseClient'

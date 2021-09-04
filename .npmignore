@@ -1,4 +1,4 @@
 *
 !LICENSE
-!dist/
+!dist/*
 !package.json
